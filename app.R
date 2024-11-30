@@ -45,9 +45,7 @@ ui <- page_fluid(
       }
       .btn {
         font-weight: bold;
-        background: linear-gradient(135deg, #d42426 50%, #b41e20 50%) !important;
         border: 2px solid #ffffff !important;
-        color: #ffffff !important;
         transition: all 0.3s ease;
         font-size: calc(1.2rem + 0.5vw);
         min-height: 60px;
@@ -58,6 +56,19 @@ ui <- page_fluid(
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         z-index: 1;
+      }
+
+      /* Boutons disponibles (gris) */
+      .btn-available {
+        background: linear-gradient(135deg, #888888 50%, #777777 50%) !important;
+        color: #ffffff !important;
+      }
+
+      /* Boutons non disponibles (rouge) */
+      .btn-unavailable {
+        background: linear-gradient(135deg, #d42426 50%, #b41e20 50%) !important;
+        color: #ffffff !important;
+        opacity: 0.7 !important;
       }
 
       .btn::before {
@@ -112,11 +123,6 @@ ui <- page_fluid(
         75% { transform: rotate(2deg) scale(1.05); }
         100% { transform: rotate(-2deg) scale(1.05); }
       }
-
-      .btn[disabled] {
-        background: linear-gradient(135deg, #888888 50%, #777777 50%) !important;
-        opacity: 0.7 !important;
-      }
       
       .modal-dialog {
         max-width: 500px;
@@ -126,54 +132,19 @@ ui <- page_fluid(
         background: rgba(255, 255, 255, 0.95);
         border: 3px solid #d42426;
         box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
       }
       .modal-header {
         background: #d42426;
         color: white;
         border-bottom: none;
-        padding: 0.5rem 1rem;
       }
       .modal-body {
         text-align: center;
-        padding: 15px;
-        max-height: calc(90vh - 120px);
-        overflow-y: auto;
-        flex: 1;
-      }
-      .case-image-wrapper {
-        margin-bottom: 8px;
-        text-align: center;
-      }
-      .case-image {
-        max-width: 50%;
-        max-height: 200px;
-        margin: 0 auto;
-        display: block;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        object-fit: contain;
-      }
-      .shiny-image-output {
-        height: auto !important;
-        max-height: 200px !important;
-      }
-      .case-text {
-        margin-bottom: 15px;
-        padding: 12px;
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 10px;
-        text-align: left;
-        font-size: 1em;
-        line-height: 1.5;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        padding: 10px;
       }
       .modal-footer {
         background: #d42426;
         border-top: none;
-        padding: 0.5rem;
       }
       @media (max-width: 576px) {
         .content-wrapper {
@@ -186,9 +157,6 @@ ui <- page_fluid(
         .modal-dialog {
           margin: 10px;
           max-width: 95%;
-        }
-        .case-image {
-          max-width: 90%;
         }
       }
     "))
@@ -224,7 +192,7 @@ server <- function(input, output, session) {
         actionButton(
           btn_id,
           day_num,
-          class = "btn w-100 h-100",
+          class = if(can_open) "btn btn-available w-100 h-100" else "btn btn-unavailable w-100 h-100",
           disabled = !can_open
         )
       )
@@ -251,7 +219,7 @@ server <- function(input, output, session) {
             lapply(seq_along(images), function(i) {
               div(
                 class = "case-image-wrapper",
-                imageOutput(paste0("image_", day_local, "_", i),height = "auto")
+                imageOutput(paste0("image_", day_local, "_", i), height = "auto")
               )
             })
           )
